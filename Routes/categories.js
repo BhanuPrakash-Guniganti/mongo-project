@@ -1,4 +1,5 @@
 const express = require('express');
+const Joe = require('joi');
 const router = express.Router();
 
 const categories = [
@@ -44,3 +45,4 @@ router.get('/categories/:id', (req, res) => {
     if (!category) return res.status(404).send('Category not found');
     res.send(category);  // ✅ fixed from res,send(category)
 });
+module.exports = router;
