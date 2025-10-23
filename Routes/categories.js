@@ -13,6 +13,10 @@ router.get('/categories', (req, res) => {
 });
 
 router.post('/categories', (req, res) => {
+    const {error} = vslidateData(req.body);
+    if (error) return res.status(400).send(error.details[0].message);
+
+
     const category = {
         id: categories.length + 1,
         name: req.body.name
@@ -45,4 +49,14 @@ router.get('/categories/:id', (req, res) => {
     if (!category) return res.status(404).send('Category not found');
     res.send(category);  // ✅ fixed from res,send(category)
 });
+
+function validateData(category) {
+    const schema = Joe.object({
+        name: Joe.string().min(3).required()
+    });
+   // return schema.validate(category);
+}
+
+
+
 module.exports = router;
