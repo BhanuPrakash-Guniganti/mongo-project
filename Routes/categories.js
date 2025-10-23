@@ -1,27 +1,43 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const Joe = require('joi');
 const router = express.Router();
 
+const CategorySchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true,
+        minlength: 3,
+        maxlength: 50
+        }
+    });
+
+const Category = mongoose.model('Category', CategorySchema);
+    
+
+/*
 const categories = [
     { id: 1, name: 'Electronics' },
     { id: 2, name: 'Books' },
     { id: 3, name: 'Clothing' },
 ];
+*/
 
-router.get('/categories', (req, res) => {
+
+router.get('/categories', async (req, res) => {
+    let categories = await Category.find()
     res.send(categories);
 });
 
-router.post('/categories', (req, res) => {
+router.post('/categories', async (req, res) => {
     const {error} = vslidateData(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
 
-    const category = {
-        id: categories.length + 1,
+    const category = new Category({
         name: req.body.name
-    }
-    categories.push(category);
+    })
+    await Category.save();
     res.send(category);  // ✅ changed from req.send(category)
 });
 
