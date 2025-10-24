@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const Joe = require('joi');
 const router = express.Router();
 
-const CategorySchema = new mongoose.Schema({
+const CategorySchema = mongoose.Schema({
     name: {
         type: String,
         required: true,
@@ -30,17 +30,19 @@ router.get('/categories', async (req, res) => {
 });
 
 router.post('/categories', async (req, res) => {
-    const {error} = vslidateData(req.body);
+    const {error} = validateData(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
 
     const category = new Category({
         name: req.body.name
     })
-    await Category.save();
+    await category.save();
     res.send(category);  // ✅ changed from req.send(category)
 });
 
+
+/*
 router.put('/categories/:id', (req, res) => {
     const category = categories.find(c => c.id === parseInt(req.params.id));
     if (!category) return res.status(404).send('Category not found');   
@@ -65,6 +67,8 @@ router.get('/categories/:id', (req, res) => {
     if (!category) return res.status(404).send('Category not found');
     res.send(category);  // ✅ fixed from res,send(category)
 });
+
+*/
 
 function validateData(category) {
     const schema = Joe.object({
