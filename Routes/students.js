@@ -9,62 +9,66 @@ const studentSchema = new mongoose.Schema({
     required: true,
     minlength: 3,
     maxlength: 50
-  }
+  },
 
-  isEnrolled{
+  isEnrolled: {
     type: Boolean,
     default: false
-}
+},
 
-Phone {
+Phone: {
   type: String,
   required: true,
   minlength: 10,
   maxlength: 15
-}
+},
+
 });
 
-const Category = mongoose.model('Category', CategorySchema);
+const Student = mongoose.model('Student', studentSchema);
 
-// GET all categories
+// GET all students
 router.get('/', async (req, res) => {
   const students = await Student.find();
   res.send(students);
 });
 
-// POST a category
+// POST a student
 router.post('/', async (req, res) => {
   const { error } = validateData(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
-  const student = new Student({
+  let student = new Student({
     name: req.body.name,
     isEnrolled: req.body.isEnrolled,
     Phone: req.body.Phone
   });
 
-  await student.save();
+  student= await student.save();
   res.send(student);
 });
 
-// UPDATE a category
+// UPDATE a student
 router.put('/:id', async (req, res) => {
   const { error } = validateData(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
   const student = await Student.findByIdAndUpdate(
     req.params.id,
-    { name: req.body.name },
-    { new: true },
+    { name: req.body.name ,
     isEnrolled: req.body.isEnrolled,
-    Phone: req.body.Phone,
+    Phone: req.body.Phone
+    },
+
+    { new: true },
+  
   );
 
   if (!student) return res.status(404).send('Category not found');
   res.send(student);
 });
 
-// DELETE a category
+// DELETE a student
 router.delete('/:id', async (req, res) => {
   const student = await Student.findByIdAndRemove(req.params.id);
   if (!student) return res.status(404).send('Category not found');
@@ -72,22 +76,22 @@ router.delete('/:id', async (req, res) => {
   res.send(student);
 });
 
-// GET category by ID
+// GET student by ID
 router.get('/:id', async (req, res) => {
   const student = await Student.findById(req.params.id);
-  if (!student) return res.status(404).send('Category not found');
+  if (!student) return res.status(404).send('student not found');
 
-  res.send(category);
+  res.send(student);
 });
 
 // Joi validation
 function validateData(student) {
   const schema = Joi.object({
     name: Joi.string().min(3).max(50).required(),
-    Phone: Joi.string().min(10).max(50).required(),
+    Phone: Joi.string().min(10).max(15).required(),
     isEnrolled: Joi.boolean()
   });
-  return schema.validate(category);
+  return schema.validate(student);
 }
 
 module.exports = router;
